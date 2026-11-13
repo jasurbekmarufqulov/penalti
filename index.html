@@ -1,0 +1,629 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JASUR AI - Matematik Futbol</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#071b13;
+ color:white;
+ font-family:Arial,sans-serif;
+ text-align:center;
+}
+
+header{
+ padding:18px 5px;
+ background:#102d20;
+ font-size:25px;
+ font-weight:bold;
+}
+
+.info{
+ display:flex;
+ justify-content:space-around;
+ flex-wrap:wrap;
+ gap:10px;
+ padding:15px;
+ background:#17452c;
+ font-size:18px;
+}
+
+.sound{
+ padding:12px;
+ background:#102d20;
+}
+
+.sound button{
+ padding:10px 18px;
+ border:0;
+ border-radius:8px;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.stands{
+ max-width:850px;
+ margin:15px auto 0;
+ padding:12px 3px;
+ background:#252b35;
+ border-radius:12px 12px 0 0;
+ font-size:25px;
+ letter-spacing:3px;
+ line-height:1.6;
+}
+
+.field{
+ position:relative;
+ width:95%;
+ max-width:850px;
+ height:420px;
+ margin:auto;
+ overflow:hidden;
+ border:5px solid white;
+ border-radius:5px 5px 12px 12px;
+ background:repeating-linear-gradient(
+  90deg,#168c40 0px,#168c40 100px,
+  #117a35 100px,#117a35 200px
+ );
+}
+
+.field:before{
+ content:"";
+ position:absolute;
+ width:80%;
+ height:170px;
+ border:3px solid #ffffffaa;
+ border-radius:50%;
+ left:10%;
+ top:180px;
+}
+
+.goal{
+ position:absolute;
+ top:20px;
+ left:22%;
+ width:56%;
+ height:150px;
+ border:9px solid white;
+ border-bottom:0;
+ background:
+ repeating-linear-gradient(90deg,transparent 0 25px,#ffffff55 26px 28px),
+ repeating-linear-gradient(0deg,transparent 0 25px,#ffffff55 26px 28px);
+ z-index:2;
+}
+
+.keeper{
+ position:absolute;
+ top:55px;
+ left:43%;
+ font-size:100px;
+ z-index:4;
+ transition:.7s;
+}
+
+.player{
+ position:absolute;
+ bottom:15px;
+ left:39%;
+ font-size:115px;
+ z-index:5;
+ transition:.5s;
+}
+
+.referee{
+ position:absolute;
+ bottom:100px;
+ right:5%;
+ font-size:75px;
+ z-index:5;
+}
+
+.var{
+ position:absolute;
+ top:170px;
+ right:2%;
+ font-size:55px;
+ z-index:5;
+}
+
+.ball{
+ position:absolute;
+ bottom:125px;
+ left:48%;
+ font-size:45px;
+ z-index:6;
+ transition:.8s;
+}
+
+.question{
+ font-size:32px;
+ font-weight:bold;
+ margin:20px 5px;
+}
+
+.answers{
+ display:flex;
+ justify-content:center;
+ flex-wrap:wrap;
+ gap:12px;
+ padding:10px;
+}
+
+.answers button{
+ min-width:100px;
+ padding:17px 25px;
+ font-size:24px;
+ font-weight:bold;
+ background:#ffc928;
+ border:0;
+ border-radius:12px;
+ cursor:pointer;
+}
+
+.answers button:disabled{
+ opacity:.5;
+}
+
+#message{
+ min-height:55px;
+ margin:15px;
+ font-size:30px;
+ font-weight:bold;
+}
+
+#start{
+ padding:17px 35px;
+ background:#00d66b;
+ color:#061b10;
+ font-size:21px;
+ font-weight:bold;
+ border:0;
+ border-radius:12px;
+ cursor:pointer;
+ margin:15px;
+}
+
+.footer{
+ padding:20px;
+ color:#aaa;
+}
+
+@media(max-width:500px){
+ .field{height:330px}
+ .goal{height:115px}
+ .keeper{font-size:75px;top:45px}
+ .player{font-size:85px}
+ .referee{font-size:55px}
+ .var{font-size:40px}
+ .question{font-size:25px}
+ .answers button{font-size:21px}
+ .stands{font-size:19px}
+}
+</style>
+</head>
+
+<body>
+
+<header>⚽ JASUR AI - MATEMATIK FUTBOL ⚽</header>
+
+<div class="info">
+ <div>⚽ GOL: <span id="goals">0</span></div>
+ <div>❌ XATO: <span id="miss">0</span></div>
+ <div>🎯 URINISH: <span id="round">0</span>/10</div>
+</div>
+
+<div class="sound">
+ <button id="soundBtn" onclick="toggleSound()">🔊 OVOZ YOQILGAN</button>
+</div>
+
+<!-- TOMOSHABINLAR -->
+<div class="stands" id="crowd">
+ 👏 👏 🙌 👏 👏 🙌 👏 👏
+ 🙌 👏 👏 👏 🙌 👏 👏 🙌
+ 👏 🙌 👏 👏 👏 🙌 👏 👏
+</div>
+
+<!-- FUTBOL MAYDONI -->
+<div class="field">
+
+ <div class="goal"></div>
+
+ <div class="keeper" id="keeper">🧍🏻‍♂️</div>
+
+ <div class="player" id="player">🧍🏻‍♂️</div>
+
+ <div class="referee">🧑🏻‍⚖️</div>
+
+ <div class="var">📺🧑🏻</div>
+
+ <div class="ball" id="ball">⚽</div>
+
+</div>
+
+<div class="question" id="question">
+ O‘yinni boshlang!
+</div>
+
+<div class="answers" id="answers"></div>
+
+<div id="message"></div>
+
+<button id="start" onclick="startGame()">
+ ⚽ O‘YINNI BOSHLASH
+</button>
+
+<div class="footer">
+ JASUR AI MATEMATIK FUTBOL
+</div>
+
+<script>
+
+// ============================
+// O'YIN SOZLAMALARI
+// ============================
+
+let goals=0;
+let miss=0;
+let round=0;
+let correctAnswer=0;
+let playing=false;
+let soundEnabled=true;
+
+let audioContext=null;
+
+function initAudio(){
+ if(!audioContext){
+  audioContext=new (window.AudioContext ||
+  window.webkitAudioContext)();
+ }
+ if(audioContext.state==="suspended"){
+  audioContext.resume();
+ }
+}
+
+// ============================
+// OVOZ YARATISH
+// ============================
+
+function tone(freq,duration,type="sine",volume=0.15,delay=0){
+ if(!soundEnabled || !audioContext)return;
+
+ let osc=audioContext.createOscillator();
+ let gain=audioContext.createGain();
+
+ osc.type=type;
+ osc.frequency.setValueAtTime(freq,audioContext.currentTime+delay);
+
+ gain.gain.setValueAtTime(0.001,audioContext.currentTime+delay);
+ gain.gain.exponentialRampToValueAtTime(
+  volume,audioContext.currentTime+delay+0.03
+ );
+ gain.gain.exponentialRampToValueAtTime(
+  0.001,audioContext.currentTime+delay+duration
+ );
+
+ osc.connect(gain);
+ gain.connect(audioContext.destination);
+
+ osc.start(audioContext.currentTime+delay);
+ osc.stop(audioContext.currentTime+delay+duration+0.05);
+}
+
+// Muxlislar qarsagi
+function applause(){
+ if(!soundEnabled || !audioContext)return;
+
+ let duration=3;
+ let length=audioContext.sampleRate*duration;
+ let buffer=audioContext.createBuffer(
+  1,length,audioContext.sampleRate
+ );
+
+ let data=buffer.getChannelData(0);
+
+ for(let i=0;i<length;i++){
+  data[i]=(Math.random()*2-1)*Math.pow(
+   Math.random(),5
+  );
+ }
+
+ let source=audioContext.createBufferSource();
+ let filter=audioContext.createBiquadFilter();
+ let gain=audioContext.createGain();
+
+ source.buffer=buffer;
+ filter.type="bandpass";
+ filter.frequency.value=1200;
+ filter.Q.value=0.7;
+
+ gain.gain.setValueAtTime(0.001,audioContext.currentTime);
+ gain.gain.linearRampToValueAtTime(
+  0.22,audioContext.currentTime+0.2
+ );
+ gain.gain.setValueAtTime(
+  0.22,audioContext.currentTime+2
+ );
+ gain.gain.linearRampToValueAtTime(
+  0.001,audioContext.currentTime+duration
+ );
+
+ source.connect(filter);
+ filter.connect(gain);
+ gain.connect(audioContext.destination);
+
+ source.start();
+ source.stop(audioContext.currentTime+duration);
+}
+
+// GOL musiqasi
+function goalMusic(){
+ if(!soundEnabled)return;
+
+ initAudio();
+
+ // GOL fanfarasi
+ let melody=[
+  [523,0],
+  [659,0.2],
+  [784,0.4],
+  [1046,0.7],
+  [784,1.1],
+  [1046,1.4]
+ ];
+
+ melody.forEach(note=>{
+  tone(note[0],0.45,"triangle",0.18,note[1]);
+ });
+
+ // Muxlislar qarsagi
+ applause();
+}
+
+// Xato javob ovozi
+function missMusic(){
+ if(!soundEnabled)return;
+
+ initAudio();
+
+ tone(250,0.4,"sawtooth",0.12);
+ tone(180,0.5,"sawtooth",0.10,0.4);
+}
+
+// Hushtak
+function whistle(){
+ if(!soundEnabled)return;
+
+ initAudio();
+ tone(1800,0.35,"sine",0.12);
+ tone(2200,0.35,"sine",0.10,0.2);
+}
+
+// Ovoz boshqaruvi
+function toggleSound(){
+ soundEnabled=!soundEnabled;
+
+ document.getElementById("soundBtn").innerText=
+ soundEnabled?"🔊 OVOZ YOQILGAN":"🔇 OVOZ O‘CHIRILGAN";
+
+ if(soundEnabled)initAudio();
+}
+
+// ============================
+// MATEMATIK MISOLLAR
+// ============================
+
+function random(min,max){
+ return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function newQuestion(){
+
+ let a=random(1,20);
+ let b=random(1,20);
+ let op=random(1,4);
+ let symbol;
+ let answer;
+
+ if(op===1){
+  symbol="+";
+  answer=a+b;
+ }
+ else if(op===2){
+  if(a<b)[a,b]=[b,a];
+  symbol="-";
+  answer=a-b;
+ }
+ else if(op===3){
+  a=random(2,12);
+  b=random(2,12);
+  symbol="×";
+  answer=a*b;
+ }
+ else{
+  b=random(2,10);
+  answer=random(2,10);
+  a=b*answer;
+  symbol="÷";
+ }
+
+ correctAnswer=answer;
+
+ document.getElementById("question").innerText=
+ a+" "+symbol+" "+b+" = ?";
+
+ let options=[answer];
+
+ while(options.length<3){
+  let fake=answer+random(-10,10);
+
+  if(fake>=0 && fake!==answer && !options.includes(fake)){
+   options.push(fake);
+  }
+ }
+
+ options.sort(()=>Math.random()-0.5);
+
+ let area=document.getElementById("answers");
+ area.innerHTML="";
+
+ options.forEach(value=>{
+  let button=document.createElement("button");
+
+  button.innerText=value;
+  button.onclick=()=>checkAnswer(value);
+
+  area.appendChild(button);
+ });
+
+}
+
+// ============================
+// O'YINNI BOSHLASH
+// ============================
+
+function startGame(){
+
+ initAudio();
+
+ goals=0;
+ miss=0;
+ round=0;
+ playing=true;
+
+ document.getElementById("goals").innerText=0;
+ document.getElementById("miss").innerText=0;
+ document.getElementById("round").innerText=0;
+
+ document.getElementById("message").innerText="";
+ document.getElementById("start").style.display="none";
+
+ resetScene();
+ whistle();
+ newQuestion();
+}
+
+// ============================
+// JAVOBNI TEKSHIRISH
+// ============================
+
+function checkAnswer(value){
+
+ if(!playing)return;
+
+ playing=false;
+ round++;
+
+ let ball=document.getElementById("ball");
+ let keeper=document.getElementById("keeper");
+ let player=document.getElementById("player");
+ let crowd=document.getElementById("crowd");
+
+ document.querySelectorAll(".answers button").forEach(btn=>{
+  btn.disabled=true;
+ });
+
+ if(value===correctAnswer){
+
+  goals++;
+
+  document.getElementById("message").innerText=
+  "⚽ GOOOOOOOOOL!!! 🏆";
+
+  ball.style.transform="translate(0,-230px) scale(.5)";
+  player.style.transform="translateY(-35px) rotate(-20deg)";
+  keeper.style.transform="translateX(140px) rotate(30deg)";
+
+  crowd.innerText=
+  "🙌 👏 🎉 👏 🙌 🎊 👏 🙌";
+
+  goalMusic();
+
+ }else{
+
+  miss++;
+
+  document.getElementById("message").innerText=
+  "🧤 DARVOZABON QAYTARDI! Javob: "+correctAnswer;
+
+  ball.style.transform="translate(-110px,-110px)";
+  keeper.style.transform="translateX(-100px) rotate(-25deg)";
+
+  crowd.innerText=
+  "😮 😔 👏 😔 😮 👏 😔";
+
+  missMusic();
+ }
+
+ document.getElementById("goals").innerText=goals;
+ document.getElementById("miss").innerText=miss;
+ document.getElementById("round").innerText=round;
+
+ setTimeout(()=>{
+
+  if(round>=10){
+   finishGame();
+  }else{
+   resetScene();
+   crowd.innerText=
+   "👏 👏 🙌 👏 👏 🙌 👏 👏";
+   playing=true;
+   newQuestion();
+  }
+
+ },3200);
+}
+
+// ============================
+// MAYDONNI TIKLASH
+// ============================
+
+function resetScene(){
+
+ document.getElementById("ball").style.transform="none";
+ document.getElementById("keeper").style.transform="none";
+ document.getElementById("player").style.transform="none";
+
+}
+
+// ============================
+// O'YIN YAKUNI
+// ============================
+
+function finishGame(){
+
+ playing=false;
+
+ document.getElementById("question").innerText=
+ "🏆 O‘YIN YAKUNLANDI!";
+
+ document.getElementById("message").innerText=
+ "⚽ "+goals+" GOL / 10 PENALTI!";
+
+ document.getElementById("answers").innerHTML="";
+
+ document.getElementById("crowd").innerText=
+ "🎉 👏 🏆 👏 🎉 🥳 👏";
+
+ document.getElementById("start").innerText=
+ "🔄 QAYTA O‘YNASH";
+
+ document.getElementById("start").style.display=
+ "inline-block";
+
+ if(goals>=7){
+  document.getElementById("message").innerText+=
+  " SEN CHEMPIONSAN! 🏆";
+ }
+
+}
+
+</script>
+
+</body>
+</html>
